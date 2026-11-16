@@ -1,0 +1,1900 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BUKU LOG PETUALANGAN ASISTEN PENIMBANG CILIK — LKPD & Asesmen Kelas III SD</title>
+  <style>
+    /* ==========================================================================
+       1. DESIGN TOKENS & PALET WARNA RESMI (SESUAI WEB SMART TV)
+       ========================================================================== */
+    :root {
+      --bg-cream: #FFFDF5;
+      --bg-white: #FFFFFF;
+      --sky-blue: #0284C7;
+      --sky-blue-dark: #0369A1;
+      --sky-blue-light: #E0F2FE;
+      --coin-gold: #F59E0B;
+      --coin-gold-light: #FEF3C7;
+      --coin-gold-dark: #B45309;
+      --text-navy: #0F172A;
+      --text-slate: #334155;
+      --coral-red: #DC2626;
+      --coral-red-light: #FEE2E2;
+      --emerald-green: #16A34A;
+      --emerald-green-light: #DCFCE7;
+
+      /* Warna 4 Lantai Menara */
+      --floor-kg: #E0E7FF;
+      --floor-kg-border: #4F46E5;
+      --floor-hg: #E0F2FE;
+      --floor-hg-border: #0284C7;
+      --floor-dag: #DCFCE7;
+      --floor-dag-border: #16A34A;
+      --floor-g: #FEF3C7;
+      --floor-g-border: #D97706;
+
+      --font-kids: 'Nunito', 'Quicksand', 'Comic Sans MS', 'Trebuchet MS', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      background-color: #CBD5E1;
+      color: var(--text-navy);
+      font-family: var(--font-kids);
+      line-height: 1.32;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 24mm;
+    }
+
+    /* ==========================================================================
+       2. TOOLBAR KONTROL CETAK (KHUSUS LAYAR / .no-print)
+       ========================================================================== */
+    .no-print-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      width: 100%;
+      background: linear-gradient(135deg, var(--text-navy) 0%, #1E293B 100%);
+      color: #FFFFFF;
+      padding: 12px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.35);
+      border-bottom: 3px solid var(--coin-gold);
+    }
+
+    .toolbar-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .toolbar-info h1 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #FDE68A;
+    }
+
+    .toolbar-info p {
+      font-size: 12.5px;
+      color: #E2E8F0;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tool-btn {
+      font-family: var(--font-kids);
+      font-size: 13.5px;
+      font-weight: 800;
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .tool-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .tool-btn-print {
+      background: var(--coin-gold);
+      color: var(--text-navy);
+      border-color: #FFFFFF;
+    }
+
+    .tool-btn-print:hover {
+      background: #FBBF24;
+    }
+
+    .tool-btn-key {
+      background: var(--sky-blue);
+      color: #FFFFFF;
+      border-color: #7DD3FC;
+    }
+
+    .tool-btn-key.active {
+      background: var(--emerald-green);
+      border-color: #BBF7D0;
+    }
+
+    /* ==========================================================================
+       3. KONTAINER LEMBAR A4 PORTRAIT (TEPAT 210mm × 297mm)
+       ========================================================================== */
+    .sheet-a4 {
+      width: 210mm;
+      height: 297mm;
+      padding: 10mm 12mm;
+      box-sizing: border-box;
+      background: var(--bg-cream);
+      page-break-after: always;
+      break-after: page;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      margin: 14px auto;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.25);
+      border: 1px solid #94A3B8;
+      position: relative;
+    }
+
+    /* Lembar ke-4 tidak memicu halaman kosong setelahnya jika kunci guru tidak dicetak */
+    body:not(.teacher-key-visible) #sheet-4,
+    body.printing-students-only #sheet-4 {
+      page-break-after: auto;
+      break-after: auto;
+    }
+
+    /* ==========================================================================
+       4. HEADER MINI KONSISTEN & FOOTER HALAMAN (1/4 s.d. 4/4)
+       ========================================================================== */
+    .mini-header {
+      border: 2px solid var(--sky-blue);
+      border-radius: 10px;
+      background: #FFFFFF;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .mini-header-top {
+      background: linear-gradient(90deg, var(--sky-blue) 0%, var(--sky-blue-dark) 100%);
+      color: #FFFFFF;
+      padding: 2mm 3.5mm;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 3mm;
+    }
+
+    .mini-header-brand {
+      display: flex;
+      align-items: center;
+      gap: 3mm;
+    }
+
+    .mini-cat-box {
+      width: 11.5mm;
+      height: 11.5mm;
+      background: #FFFFFF;
+      border-radius: 50%;
+      border: 1.5px solid var(--coin-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 0.5mm;
+    }
+
+    .mini-header-titles h2 {
+      font-size: 11.5pt;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+      line-height: 1.15;
+    }
+
+    .mini-header-titles p {
+      font-size: 8.2pt;
+      font-weight: 700;
+      color: #E0F2FE;
+    }
+
+    .sheet-type-badge {
+      background: var(--coin-gold);
+      color: var(--text-navy);
+      font-size: 8pt;
+      font-weight: 900;
+      padding: 1.5mm 3mm;
+      border-radius: 999px;
+      border: 1.5px solid #FFFFFF;
+      text-align: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .sheet-type-badge.asesmen {
+      background: var(--emerald-green-light);
+      color: #14532D;
+      border-color: #FFFFFF;
+    }
+
+    .mini-header-meta {
+      background: var(--sky-blue-light);
+      color: var(--text-navy);
+      font-size: 7.5pt;
+      font-weight: 800;
+      padding: 1.1mm 3.5mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #BAE6FD;
+    }
+
+    .sheet-footer {
+      border-top: 1.5px solid #CBD5E1;
+      padding-top: 1.4mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 7.8pt;
+      font-weight: 800;
+      color: var(--text-slate);
+      flex-shrink: 0;
+    }
+
+    .page-num-pill {
+      background: var(--text-navy);
+      color: #FFFFFF;
+      padding: 0.7mm 2.8mm;
+      border-radius: 999px;
+      font-size: 8pt;
+      font-weight: 900;
+    }
+
+    /* ==========================================================================
+       5. KOMPONEN UMUM LKPD & ASESMEN (KOTAK TULIS LEGA UNTUK KELAS III SD)
+       ========================================================================== */
+    .identity-box {
+      background: #FFFFFF;
+      border: 1.8px solid var(--text-navy);
+      border-radius: 8px;
+      padding: 2mm 3.5mm;
+      font-size: 9pt;
+      font-weight: 800;
+    }
+
+    .identity-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2mm 6mm;
+    }
+
+    .id-field {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5mm;
+    }
+
+    .id-line {
+      flex: 1;
+      border-bottom: 1.5px dotted var(--text-navy);
+      height: 5.5mm;
+    }
+
+    .section-title-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--sky-blue);
+      color: #FFFFFF;
+      padding: 1.3mm 3mm;
+      border-radius: 7px;
+      font-size: 9.5pt;
+      font-weight: 900;
+    }
+
+    .section-title-bar.gold {
+      background: var(--coin-gold);
+      color: var(--text-navy);
+    }
+
+    .section-title-bar.green {
+      background: var(--emerald-green);
+      color: #FFFFFF;
+    }
+
+    .sync-badge {
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--text-navy);
+      font-size: 7.3pt;
+      font-weight: 900;
+      padding: 0.6mm 2.2mm;
+      border-radius: 999px;
+    }
+
+    .instruction-text {
+      font-size: 8.6pt;
+      font-weight: 700;
+      color: var(--text-slate);
+      margin: 1mm 0 1.4mm;
+    }
+
+    .write-blank {
+      display: inline-block;
+      border-bottom: 1.5px solid var(--text-navy);
+      min-width: 14mm;
+      height: 5mm;
+      vertical-align: bottom;
+    }
+
+    .write-blank.lg {
+      min-width: 24mm;
+    }
+
+    .write-blank.xl {
+      min-width: 36mm;
+    }
+
+    .write-box-inline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid var(--text-navy);
+      background: #FFFFFF;
+      border-radius: 5px;
+      min-width: 11mm;
+      height: 6.5mm;
+      vertical-align: middle;
+    }
+
+    /* Tabel Standar Rapi & Lega */
+    table.log-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #FFFFFF;
+      font-size: 8.6pt;
+    }
+
+    table.log-table th {
+      background: var(--sky-blue-light);
+      color: var(--text-navy);
+      font-weight: 900;
+      border: 1.5px solid var(--text-navy);
+      padding: 1.5mm 2mm;
+      text-align: center;
+    }
+
+    table.log-table td {
+      border: 1.5px solid var(--text-navy);
+      padding: 1.8mm 2.2mm;
+      vertical-align: middle;
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       6. STYLING KHUSUS LEMBAR 1 (HALAMAN 1/4)
+       ========================================================================== */
+    .summary-4-units {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2.2mm;
+    }
+
+    .mini-unit-card {
+      border-radius: 8px;
+      border: 1.5px solid var(--text-navy);
+      padding: 1.5mm 2mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .mini-unit-card.kg { background: var(--floor-kg); border-color: var(--floor-kg-border); }
+    .mini-unit-card.hg { background: var(--floor-hg); border-color: var(--floor-hg-border); }
+    .mini-unit-card.dag { background: var(--floor-dag); border-color: var(--floor-dag-border); }
+    .mini-unit-card.g { background: var(--floor-g); border-color: var(--floor-g-border); }
+
+    .mini-unit-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 900;
+      font-size: 9pt;
+      border-bottom: 1px dashed rgba(15, 23, 42, 0.3);
+      padding-bottom: 0.8mm;
+      margin-bottom: 1mm;
+    }
+
+    .mini-obj-row {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 1mm;
+      margin: 0.8mm 0;
+    }
+
+    .mini-obj-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 7.2pt;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .gold-eq-banner {
+      background: linear-gradient(90deg, #FEF3C7 0%, #FDE68A 50%, #FEF3C7 100%);
+      border: 2px solid var(--coin-gold-dark);
+      border-radius: 7px;
+      padding: 1.2mm 3mm;
+      text-align: center;
+      font-size: 9.5pt;
+      font-weight: 900;
+      color: var(--text-navy);
+      margin-top: 1.5mm;
+    }
+
+    .akt2-grid {
+      display: grid;
+      grid-template-columns: 46% 52%;
+      gap: 2%;
+      align-items: stretch;
+    }
+
+    .tower-worksheet-box {
+      background: #FFFFFF;
+      border: 1.8px solid var(--sky-blue);
+      border-radius: 9px;
+      padding: 2mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .akt2-right-stack {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 2mm;
+    }
+
+    .mnemonic-box {
+      background: var(--coin-gold-light);
+      border: 1.8px solid var(--coin-gold);
+      border-radius: 8px;
+      padding: 1.8mm 2.5mm;
+    }
+
+    .rules-box {
+      background: #FFFFFF;
+      border: 1.8px solid var(--text-navy);
+      border-radius: 8px;
+      padding: 1.8mm 2.5mm;
+      font-size: 8.3pt;
+      font-weight: 700;
+    }
+
+    .order-box {
+      background: var(--sky-blue-light);
+      border: 1.8px solid var(--sky-blue);
+      border-radius: 8px;
+      padding: 1.8mm 2.5mm;
+      font-size: 8.4pt;
+      font-weight: 800;
+    }
+
+    /* ==========================================================================
+       7. STYLING KHUSUS LEMBAR 2 (HALAMAN 2/4)
+       ========================================================================== */
+    .warning-concept-box {
+      background: var(--coral-red-light);
+      border: 2px solid var(--coral-red);
+      border-radius: 9px;
+      padding: 2mm 3mm;
+      display: flex;
+      align-items: center;
+      gap: 3mm;
+      font-size: 8.4pt;
+      font-weight: 700;
+      color: #7F1D1D;
+    }
+
+    .guided-3-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5mm;
+      margin-top: 1.8mm;
+    }
+
+    .guided-card {
+      background: #FFFFFF;
+      border: 1.5px solid var(--coin-gold-dark);
+      border-radius: 8px;
+      padding: 1.8mm 2.2mm;
+      font-size: 8.4pt;
+      font-weight: 800;
+    }
+
+    .akt4-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3mm;
+    }
+
+    .akt4-panel {
+      background: #FFFFFF;
+      border: 1.8px solid var(--text-navy);
+      border-radius: 8px;
+      padding: 2mm 2.5mm;
+    }
+
+    .akt4-panel h4 {
+      font-size: 8.8pt;
+      font-weight: 900;
+      color: var(--sky-blue-dark);
+      border-bottom: 1.5px solid #E2E8F0;
+      padding-bottom: 1mm;
+      margin-bottom: 1.5mm;
+    }
+
+    .q-list-compact {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2.3mm;
+      font-size: 8.4pt;
+      font-weight: 700;
+    }
+
+    .reflection-strip {
+      background: var(--emerald-green-light);
+      border: 1.8px solid var(--emerald-green);
+      border-radius: 8px;
+      padding: 1.6mm 3mm;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 8.3pt;
+      font-weight: 800;
+      color: #14532D;
+    }
+
+    /* ==========================================================================
+       8. STYLING KHUSUS LEMBAR 3 (HALAMAN 3/4 — ASESMEN PEMAHAMAN KONSEP)
+       ========================================================================== */
+    .mc-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2.2mm;
+      font-size: 8.8pt;
+      font-weight: 700;
+    }
+
+    .mc-item {
+      background: #FFFFFF;
+      border: 1.3px solid #CBD5E1;
+      border-radius: 7px;
+      padding: 1.5mm 2.5mm;
+    }
+
+    .mc-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2mm 6mm;
+      margin-top: 1mm;
+      padding-left: 4mm;
+      font-weight: 800;
+    }
+
+    .matching-arena {
+      background: #FFFFFF;
+      border: 1.5px solid var(--text-navy);
+      border-radius: 8px;
+      padding: 2mm 4mm;
+      display: grid;
+      grid-template-columns: 44% 12% 44%;
+      align-items: center;
+    }
+
+    .match-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2mm;
+    }
+
+    .match-card-left {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #F8FAFC;
+      border: 1.5px solid #94A3B8;
+      border-radius: 7px;
+      padding: 1mm 2.5mm;
+      font-size: 8.5pt;
+      font-weight: 800;
+      height: 9mm;
+    }
+
+    .match-card-right {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--coin-gold-light);
+      border: 1.5px solid var(--coin-gold-dark);
+      border-radius: 7px;
+      padding: 1mm 2.5mm;
+      font-size: 8.6pt;
+      font-weight: 900;
+      height: 9mm;
+    }
+
+    .match-dot {
+      width: 3.2mm;
+      height: 3.2mm;
+      border-radius: 50%;
+      background: var(--text-navy);
+      display: inline-block;
+    }
+
+    .short-ans-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.2mm 4mm;
+      background: #FFFFFF;
+      border: 1.5px solid var(--text-navy);
+      border-radius: 8px;
+      padding: 2.2mm 3mm;
+      font-size: 8.6pt;
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       9. STYLING KHUSUS LEMBAR 4 (HALAMAN 4/4 — PENERAPAN & PEMECAHAN MASALAH)
+       ========================================================================== */
+    .compare-order-grid {
+      display: grid;
+      grid-template-columns: 49% 49%;
+      gap: 2%;
+    }
+
+    .problem-box {
+      background: #FFFFFF;
+      border: 1.5px solid var(--text-navy);
+      border-radius: 8px;
+      padding: 2mm 2.8mm;
+      font-size: 8.6pt;
+      font-weight: 700;
+    }
+
+    .story-problem-card {
+      background: #FFFFFF;
+      border: 1.8px solid var(--sky-blue);
+      border-radius: 8px;
+      padding: 2mm 3mm;
+      font-size: 8.7pt;
+      font-weight: 700;
+      margin-bottom: 2mm;
+    }
+
+    .story-step-line {
+      display: flex;
+      align-items: baseline;
+      gap: 2mm;
+      margin-top: 1.8mm;
+    }
+
+    .story-step-line .step-lbl {
+      font-weight: 900;
+      color: var(--sky-blue-dark);
+      min-width: 24mm;
+    }
+
+    .story-step-line .step-write {
+      flex: 1;
+      border-bottom: 1.5px dotted var(--text-navy);
+      height: 6mm;
+    }
+
+    .closing-cat-banner {
+      background: var(--coin-gold-light);
+      border: 1.8px solid var(--coin-gold);
+      border-radius: 8px;
+      padding: 1.4mm 3mm;
+      display: flex;
+      align-items: center;
+      gap: 2.5mm;
+      font-size: 8.3pt;
+      font-weight: 800;
+    }
+
+    /* ==========================================================================
+       10. KUNCI JAWABAN & PEDOMAN PENSKORAN GURU (TERPISAH)
+       ========================================================================== */
+    #teacher-key-section {
+      display: none;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 10mm 12mm;
+      box-sizing: border-box;
+      background: #FFFFFF;
+      margin: 14px auto;
+      border: 2px dashed var(--sky-blue-dark);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.25);
+    }
+
+    body.teacher-key-visible #teacher-key-section {
+      display: block;
+    }
+
+    .key-header {
+      background: var(--text-navy);
+      color: #FFFFFF;
+      padding: 3mm 4mm;
+      border-radius: 8px;
+      border-bottom: 3px solid var(--coin-gold);
+      margin-bottom: 3mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .key-block {
+      border: 1.5px solid #CBD5E1;
+      border-radius: 8px;
+      padding: 2.5mm 3.5mm;
+      margin-bottom: 3mm;
+      font-size: 8.6pt;
+    }
+
+    .key-block h3 {
+      font-size: 9.8pt;
+      font-weight: 900;
+      color: var(--sky-blue-dark);
+      border-bottom: 1.5px solid #E2E8F0;
+      padding-bottom: 1mm;
+      margin-bottom: 1.5mm;
+    }
+
+    /* ==========================================================================
+       11. ATURAN CETAK @page & @media print
+       ========================================================================== */
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        background: #FFFFFF !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .no-print,
+      .no-print-toolbar {
+        display: none !important;
+      }
+
+      .sheet-a4 {
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        width: 210mm !important;
+        height: 297mm !important;
+      }
+
+      body.printing-students-only #teacher-key-section {
+        display: none !important;
+      }
+
+      body.teacher-key-visible:not(.printing-students-only) #teacher-key-section {
+        display: block !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        width: 210mm !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ========================================================================
+       TOOLBAR LAYAR (TIDAK IKUT TERCETAK / .no-print)
+       ======================================================================== -->
+  <div class="no-print-toolbar no-print">
+    <div class="toolbar-info">
+      <div style="width:38px; height:38px; background:#FFF; border-radius:50%; border:2px solid #F59E0B; padding:2px;" data-svg="cat"></div>
+      <div>
+        <h1>BUKU LOG PETUALANGAN ASISTEN PENIMBANG CILIK (Siap Cetak A4 Portrait)</h1>
+        <p>SD Negeri 1 Nagrikidul • Matematika Kelas III Fase B • Tepat 4 Lembar Siswa (Halaman 1/4 – 4/4)</p>
+      </div>
+    </div>
+    <div class="toolbar-actions">
+      <button type="button" class="tool-btn tool-btn-print" id="btnPrintStudents">
+        🖨️ Cetak 4 Lembar Siswa (A4 Portrait)
+      </button>
+      <button type="button" class="tool-btn tool-btn-key" id="btnToggleTeacherKey">
+        🔑 Tampilkan / Cetak Kunci Jawaban Guru
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       LEMBAR 1 (HALAMAN 1/4) — LKPD BERPASANGAN: MENGENAL SATUAN & TANGGA SATUAN
+       ======================================================================== -->
+  <section class="sheet-a4" id="sheet-1">
+    <!-- Mini-Header Konsisten -->
+    <header class="mini-header">
+      <div class="mini-header-top">
+        <div class="mini-header-brand">
+          <div class="mini-cat-box" data-svg="cat"></div>
+          <div class="mini-header-titles">
+            <h2>BUKU LOG PETUALANGAN ASISTEN PENIMBANG CILIK</h2>
+            <p>Pendamping Belajar Petualangan Lift Angka Nol: Si Kucing Hitam</p>
+          </div>
+        </div>
+        <div class="sheet-type-badge">👥 LKPD BERPASANGAN</div>
+      </div>
+      <div class="mini-header-meta">
+        <span>🏫 SD Negeri 1 Nagrikidul • Matematika Kelas III (Fase B)</span>
+        <span>⚖️ Materi: Satuan Berat Baku (2 × 35 Menit) • Metode: Pause &amp; Sync</span>
+      </div>
+    </header>
+
+    <!-- Kotak Identitas Tim Asisten Penimbang Cilik -->
+    <div class="identity-box">
+      <div style="font-size: 8.5pt; font-weight: 900; color: var(--sky-blue-dark); margin-bottom: 1.2mm;">
+        🪪 KARTU TANDA TIM ASISTEN PENIMBANG CILIK (Dikerjakan Berpasangan 2 Siswa)
+      </div>
+      <div class="identity-grid">
+        <div class="id-field"><span>Asisten 1:</span><span class="id-line"></span></div>
+        <div class="id-field"><span>Kelas: III -</span><span class="id-line" style="max-width: 18mm;"></span><span style="margin-left:3mm;">Tanggal:</span><span class="id-line"></span></div>
+        <div class="id-field"><span>Asisten 2:</span><span class="id-line"></span></div>
+        <div class="id-field"><span>Nama Tim:</span><span class="id-line"></span></div>
+      </div>
+    </div>
+
+    <!-- Bahan Ajar Cetak: Ringkasan 4 Satuan Berat & 6 Ilustrasi Benda Konkret -->
+    <div>
+      <div class="section-title-bar gold">
+        <span>📚 RINGKASAN MATERI: EMPAT SATUAN BERAT BAKU &amp; BENDA KONKRET</span>
+        <span class="sync-badge">Acuan Web Halaman 1 &amp; 2</span>
+      </div>
+      <div class="summary-4-units" style="margin-top: 1.5mm;">
+        <!-- Kartu kg -->
+        <div class="mini-unit-card kg">
+          <div class="mini-unit-head"><span>Lantai 4: kg</span><span>Kilogram</span></div>
+          <div class="mini-obj-row">
+            <div class="mini-obj-item"><div data-svg="beras"></div><span>Kantong Beras (1 kg)</span></div>
+          </div>
+          <div style="font-size: 7.4pt; font-weight: 700; text-align: center;">Benda cukup berat.</div>
+        </div>
+        <!-- Kartu hg / ons -->
+        <div class="mini-unit-card hg">
+          <div class="mini-unit-head"><span>Lantai 3: hg/ons</span><span>Hektogram</span></div>
+          <div class="mini-obj-row">
+            <div class="mini-obj-item"><div data-svg="apel"></div><span>Apel (1 hg)</span></div>
+            <div class="mini-obj-item"><div data-svg="cabai"></div><span>Cabai (ons)</span></div>
+          </div>
+          <div style="font-size: 7.4pt; font-weight: 700; text-align: center;">Satuan belanja pasar.</div>
+        </div>
+        <!-- Kartu dag -->
+        <div class="mini-unit-card dag">
+          <div class="mini-unit-head"><span>Lantai 2: dag</span><span>Dekagram</span></div>
+          <div class="mini-obj-row">
+            <div class="mini-obj-item"><div data-svg="permen"></div><span>3 Permen</span></div>
+            <div class="mini-obj-item"><div data-svg="penghapus"></div><span>Penghapus</span></div>
+          </div>
+          <div style="font-size: 7.4pt; font-weight: 700; text-align: center;">Benda ringan kecil.</div>
+        </div>
+        <!-- Kartu g -->
+        <div class="mini-unit-card g">
+          <div class="mini-unit-head"><span>Lantai 1: g</span><span>Gram</span></div>
+          <div class="mini-obj-row">
+            <div class="mini-obj-item"><div data-svg="klip"></div><span>Klip Kertas (1 g)</span></div>
+          </div>
+          <div style="font-size: 7.4pt; font-weight: 700; text-align: center;">Benda sangat ringan.</div>
+        </div>
+      </div>
+      <div class="gold-eq-banner">
+        ⚖️ PENEGASAN WAJIB: &nbsp;&nbsp; 1 hg = 1 ons = 100 g &nbsp;&nbsp; | &nbsp;&nbsp; 1 kg = 10 hg = 100 dag = 1.000 g
+      </div>
+    </div>
+
+    <!-- Aktivitas 1 [PAUSE & SYNC — Web Halaman 2: Kenali Satuan Berat] -->
+    <div>
+      <div class="section-title-bar">
+        <span>🔍 AKTIVITAS 1: MENGENAL SATUAN BERAT &amp; KESETARAAN</span>
+        <span class="sync-badge">⏸️ PAUSE &amp; SYNC • Web Halaman 2</span>
+      </div>
+      <p class="instruction-text">
+        Amati tayangan <strong>Kenali Satuan Berat</strong> di Smart TV dan benda nyata di meja guru. Diskusikan bersama pasanganmu, lalu lengkapi tabel berikut!
+      </p>
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th style="width: 13%;">Lantai</th>
+            <th style="width: 24%;">Satuan &amp; Nama</th>
+            <th style="width: 34%;">Tuliskan 2 Contoh Benda Sehari-hari</th>
+            <th style="width: 29%;">Lengkapi Kesetaraan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background: #F8FAFF;">
+            <td style="text-align:center; font-weight:900;">Lantai 4</td>
+            <td><strong>kg</strong> (Kilogram)</td>
+            <td>1. <span class="write-blank lg"></span> &nbsp; 2. <span class="write-blank lg"></span></td>
+            <td>1 kg = <span class="write-blank" style="min-width:9mm;"></span> hg = <span class="write-blank" style="min-width:12mm;"></span> g</td>
+          </tr>
+          <tr style="background: #F0F9FF;">
+            <td style="text-align:center; font-weight:900;">Lantai 3</td>
+            <td><strong>hg / ons</strong> (Hektogram/ons)</td>
+            <td>1. <span class="write-blank lg"></span> &nbsp; 2. <span class="write-blank lg"></span></td>
+            <td>1 hg = <span class="write-blank" style="min-width:9mm;"></span> ons = <span class="write-blank" style="min-width:11mm;"></span> g</td>
+          </tr>
+          <tr style="background: #F0FDF4;">
+            <td style="text-align:center; font-weight:900;">Lantai 2</td>
+            <td><strong>dag</strong> (Dekagram)</td>
+            <td>1. <span class="write-blank lg"></span> &nbsp; 2. <span class="write-blank lg"></span></td>
+            <td>1 dag = <span class="write-blank" style="min-width:10mm;"></span> g</td>
+          </tr>
+          <tr style="background: #FFFBEB;">
+            <td style="text-align:center; font-weight:900;">Lantai 1</td>
+            <td><strong>g</strong> (Gram)</td>
+            <td>1. <span class="write-blank lg"></span> &nbsp; 2. <span class="write-blank lg"></span></td>
+            <td>1.000 g = <span class="write-blank" style="min-width:9mm;"></span> hg = <span class="write-blank" style="min-width:9mm;"></span> kg</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Aktivitas 2 [PAUSE & SYNC — Web Halaman 3: Petualangan Tangga Satuan] -->
+    <div>
+      <div class="section-title-bar">
+        <span>🪜 AKTIVITAS 2: MENARA TANGGA SATUAN &amp; JEMBATAN KELEDAI</span>
+        <span class="sync-badge">⏸️ PAUSE &amp; SYNC • Web Halaman 3</span>
+      </div>
+      <p class="instruction-text">
+        Susun <strong>Kartu Simbol Satuan</strong> di mejamu sesuai jembatan keledai <em>“Kucing Hitam Dalam Got”</em>, lalu lengkapi menara dan aturannya!
+      </p>
+      <div class="akt2-grid">
+        <!-- Kolom Kiri: Menara Gudang Timbangan 4 Lantai & Lift Vertikal SVG -->
+        <div class="tower-worksheet-box">
+          <div style="font-size: 8.3pt; font-weight: 900; color: var(--sky-blue-dark); margin-bottom: 1mm;">
+            🏰 Lengkapi Simbol Satuan Setiap Lantai Menara
+          </div>
+          <div data-svg="tower-worksheet" style="width: 100%;"></div>
+        </div>
+
+        <!-- Kolom Kanan: Jembatan Keledai, Aturan Tangga & Urutan -->
+        <div class="akt2-right-stack">
+          <div class="mnemonic-box">
+            <div style="font-size: 8.6pt; font-weight: 900; color: var(--coin-gold-dark); margin-bottom: 1mm;">
+              🐱 Jembatan Keledai: “KUCING HITAM DALAM GOT”
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5mm 3mm; font-size: 8.4pt; font-weight: 800;">
+              <div>• <strong>Kucing</strong> = <span class="write-blank"></span></div>
+              <div>• <strong>Dalam</strong> = <span class="write-blank"></span></div>
+              <div>• <strong>Hitam</strong> = <span class="write-blank"></span></div>
+              <div>• <strong>Got</strong> = <span class="write-blank"></span></div>
+            </div>
+          </div>
+
+          <div class="rules-box">
+            <div style="font-weight: 900; color: var(--text-navy); margin-bottom: 1mm;">
+              📏 Aturan Perpindahan Tangga Satuan:
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2mm 2mm;">
+              <div style="color: var(--coral-red);">
+                <div>⬇️ Turun 1 tingkat = <strong>× 10</strong></div>
+                <div>⬇️ Turun 2 tingkat = <strong>×</strong> <span class="write-blank" style="min-width:10mm;"></span></div>
+                <div>⬇️ Turun 3 tingkat = <strong>×</strong> <span class="write-blank" style="min-width:12mm;"></span></div>
+              </div>
+              <div style="color: var(--emerald-green);">
+                <div>⬆️ Naik 1 tingkat = <strong>÷ 10</strong></div>
+                <div>⬆️ Naik 2 tingkat = <strong>÷</strong> <span class="write-blank" style="min-width:10mm;"></span></div>
+                <div>⬆️ Naik 3 tingkat = <strong>÷</strong> <span class="write-blank" style="min-width:12mm;"></span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-box">
+            <div style="margin-bottom: 1.5mm;">
+              🔽 Urutan <strong>Terbesar → Terkecil</strong>:<br/>
+              <span class="write-box-inline"></span> → <span class="write-box-inline"></span> → <span class="write-box-inline"></span> → <span class="write-box-inline"></span>
+            </div>
+            <div>
+              🔼 Urutan <strong>Terkecil → Terbesar</strong>:<br/>
+              <span class="write-box-inline"></span> → <span class="write-box-inline"></span> → <span class="write-box-inline"></span> → <span class="write-box-inline"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Halaman 1/4 -->
+    <footer class="sheet-footer">
+      <span>SD Negeri 1 Nagrikidul • Buku Log Petualangan Lift Angka Nol: Si Kucing Hitam</span>
+      <span class="page-num-pill">Halaman 1/4</span>
+    </footer>
+  </section>
+
+  <!-- ========================================================================
+       LEMBAR 2 (HALAMAN 2/4) — LKPD BERPASANGAN: SIMULASI LIFT & LATIHAN
+       ======================================================================== -->
+  <section class="sheet-a4" id="sheet-2">
+    <!-- Mini-Header Konsisten -->
+    <header class="mini-header">
+      <div class="mini-header-top">
+        <div class="mini-header-brand">
+          <div class="mini-cat-box" data-svg="cat"></div>
+          <div class="mini-header-titles">
+            <h2>BUKU LOG PETUALANGAN ASISTEN PENIMBANG CILIK</h2>
+            <p>Pendamping Belajar Petualangan Lift Angka Nol: Si Kucing Hitam</p>
+          </div>
+        </div>
+        <div class="sheet-type-badge">👥 LKPD BERPASANGAN</div>
+      </div>
+      <div class="mini-header-meta">
+        <span>🏫 SD Negeri 1 Nagrikidul • Matematika Kelas III (Fase B)</span>
+        <span>⚖️ Materi: Satuan Berat Baku (2 × 35 Menit) • Metode: Pause &amp; Sync</span>
+      </div>
+    </header>
+
+    <!-- Peringatan Konsep Penting (Anti-Miskonsepsi) -->
+    <div class="warning-concept-box">
+      <div style="width: 11mm; height: 11mm; flex-shrink: 0;" data-svg="coin"></div>
+      <div>
+        <div style="font-size: 9pt; font-weight: 900; color: var(--coral-red); margin-bottom: 0.4mm;">
+          ⚠️ PERINGATAN KONSEP PENTING DARI SI KUCING HITAM!
+        </div>
+        <div>
+          <strong>Koin Angka 0 hanyalah alat bantu visual!</strong> Konversi satuan harus dihitung berdasarkan <strong>perkalian (×10)</strong> saat lift turun atau <strong>pembagian (÷10)</strong> saat lift naik sesuai jumlah perpindahan lantai. Jangan menganggap konversi selalu dilakukan dengan sekadar menambah atau menghapus angka nol!
+        </div>
+      </div>
+    </div>
+
+    <!-- Aktivitas 3 [PAUSE & SYNC — Web Halaman 4: Simulasi Lift Angka Nol] -->
+    <div>
+      <div class="section-title-bar">
+        <span>🛗 AKTIVITAS 3: CATATAN MESIN LIFT ANGKA NOL</span>
+        <span class="sync-badge">⏸️ PAUSE &amp; SYNC • Web Halaman 4</span>
+      </div>
+      <p class="instruction-text">
+        <strong>Langkah Kerja:</strong> (1) Susun <strong>Kartu Angka (1, 2, 3, 5)</strong> dan <strong>Keping Koin Angka 0</strong> di mejamu sesuai soal; (2) Cocokkan dengan animasi Lift di Smart TV; (3) Catat hasilnya di bawah ini!
+      </p>
+
+      <!-- Tabel Pengamatan A: Perjalanan 1 kg ke g dan 1.000 g ke kg -->
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th style="width: 14%;">Kondisi Awal</th>
+            <th style="width: 28%;">Perpindahan Lantai Lift</th>
+            <th style="width: 26%;">Operasi Matematika (×10 / ÷10)</th>
+            <th style="width: 14%;">Koin Angka 0</th>
+            <th style="width: 18%;">Hasil Akhir</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align:center; font-weight:900;">1 kg</td>
+            <td>⬇️ Turun 1 lantai (kg → hg)</td>
+            <td>1 × 10 = <span class="write-blank" style="min-width:11mm;"></span></td>
+            <td style="text-align:center;"><span class="write-blank" style="min-width:8mm;"></span> koin</td>
+            <td><span class="write-blank" style="min-width:11mm;"></span> <strong>hg</strong></td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:900;">10 hg</td>
+            <td>⬇️ Turun 1 lantai (hg → dag)</td>
+            <td>10 × 10 = <span class="write-blank" style="min-width:11mm;"></span></td>
+            <td style="text-align:center;"><span class="write-blank" style="min-width:8mm;"></span> koin</td>
+            <td><span class="write-blank" style="min-width:11mm;"></span> <strong>dag</strong></td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:900;">100 dag</td>
+            <td>⬇️ Turun 1 lantai (dag → g)</td>
+            <td>100 × 10 = <span class="write-blank" style="min-width:12mm;"></span></td>
+            <td style="text-align:center;"><span class="write-blank" style="min-width:8mm;"></span> koin</td>
+            <td><span class="write-blank" style="min-width:12mm;"></span> <strong>g</strong></td>
+          </tr>
+          <tr style="background:#F0FDF4;">
+            <td style="text-align:center; font-weight:900;">1.000 g</td>
+            <td>⬆️ Naik 1 lantai (g → dag)</td>
+            <td>1.000 ÷ 10 = <span class="write-blank" style="min-width:11mm;"></span></td>
+            <td style="text-align:center;"><span class="write-blank" style="min-width:8mm;"></span> koin</td>
+            <td><span class="write-blank" style="min-width:11mm;"></span> <strong>dag</strong></td>
+          </tr>
+          <tr style="background:#F0FDF4;">
+            <td style="text-align:center; font-weight:900;">100 dag</td>
+            <td>⬆️ Naik 2 lantai (dag → kg)</td>
+            <td>100 ÷ 100 = <span class="write-blank" style="min-width:10mm;"></span></td>
+            <td style="text-align:center;"><span class="write-blank" style="min-width:8mm;"></span> koin</td>
+            <td><span class="write-blank" style="min-width:10mm;"></span> <strong>kg</strong></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Tabel Pengamatan B: 3 Contoh Terpandu -->
+      <div class="guided-3-grid">
+        <div class="guided-card">
+          <div style="color:var(--sky-blue-dark); margin-bottom:1mm;">🌟 Contoh Terpandu 1</div>
+          <div><strong>2 kg</strong> = <span class="write-blank" style="min-width:10mm;"></span> <strong>hg</strong></div>
+          <div style="margin-top:1mm;">Operasi: 2 × 10 = <span class="write-blank" style="min-width:10mm;"></span></div>
+          <div style="margin-top:1mm;">Visual Koin: <span class="write-blank" style="min-width:8mm;"></span> koin 0</div>
+        </div>
+        <div class="guided-card">
+          <div style="color:var(--sky-blue-dark); margin-bottom:1mm;">🌟 Contoh Terpandu 2</div>
+          <div><strong>5 hg</strong> = <span class="write-blank" style="min-width:10mm;"></span> <strong>dag</strong></div>
+          <div style="margin-top:1mm;">Operasi: 5 × 10 = <span class="write-blank" style="min-width:10mm;"></span></div>
+          <div style="margin-top:1mm;">Visual Koin: <span class="write-blank" style="min-width:8mm;"></span> koin 0</div>
+        </div>
+        <div class="guided-card">
+          <div style="color:var(--sky-blue-dark); margin-bottom:1mm;">🌟 Contoh Terpandu 3</div>
+          <div><strong>3 dag</strong> = <span class="write-blank" style="min-width:10mm;"></span> <strong>g</strong></div>
+          <div style="margin-top:1mm;">Operasi: 3 × 10 = <span class="write-blank" style="min-width:10mm;"></span></div>
+          <div style="margin-top:1mm;">Visual Koin: <span class="write-blank" style="min-width:8mm;"></span> koin 0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aktivitas 4 [PAUSE & SYNC — Web Halaman 5 & 6: Latihan Interaktif & Misi Tantangan] -->
+    <div>
+      <div class="section-title-bar green">
+        <span>🏆 AKTIVITAS 4: LATIHAN INTERAKTIF &amp; MISI TANTANGAN AKHIR</span>
+        <span class="sync-badge">⏸️ PAUSE &amp; SYNC • Web Halaman 5 &amp; 6</span>
+      </div>
+      <p class="instruction-text">
+        Diskusikan setiap nomor bersama pasanganmu dan tulis jawabannya di Buku Log sebelum guru membuka jawaban di Smart TV!
+      </p>
+
+      <div class="akt4-two-col">
+        <!-- Bagian A: 5 Latihan Interaktif (Web Halaman 5) -->
+        <div class="akt4-panel">
+          <h4>✏️ Bagian A. Latihan 5 Keterampilan (Web Halaman 5)</h4>
+          <ol class="q-list-compact">
+            <li><strong>1.</strong> Urutkan terbesar → terkecil (<em>dag, kg, g, hg</em>):<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="write-blank"></span>, <span class="write-blank"></span>, <span class="write-blank"></span>, <span class="write-blank"></span>
+            </li>
+            <li><strong>2.</strong> Urutkan terkecil → terbesar (<em>ons, g, kg, dag</em>):<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="write-blank"></span>, <span class="write-blank"></span>, <span class="write-blank"></span>, <span class="write-blank"></span>
+            </li>
+            <li><strong>3.</strong> Bandingkan (<code>&gt;</code>, <code>&lt;</code>, atau <code>=</code>): &nbsp; <strong>4 kg</strong> <span class="write-box-inline" style="min-width:9mm;"></span> <strong>400 g</strong></li>
+            <li><strong>4.</strong> Lengkapi: <strong>1 hg</strong> = <span class="write-blank" style="min-width:9mm;"></span> <strong>ons</strong> = <span class="write-blank" style="min-width:11mm;"></span> <strong>g</strong></li>
+            <li><strong>5.</strong> Ibu membeli <strong>6 ons</strong> bawang merah = <span class="write-blank" style="min-width:12mm;"></span> <strong>g</strong></li>
+          </ol>
+        </div>
+
+        <!-- Bagian B: 5 Tantangan Akhir (Web Halaman 6) -->
+        <div class="akt4-panel" style="border-color: var(--coin-gold-dark); background: #FFFDF7;">
+          <h4 style="color: var(--coin-gold-dark);">🌟 Bagian B. Tantangan Akhir (Web Halaman 6)</h4>
+          <ol class="q-list-compact">
+            <li><strong>1.</strong> <strong>3 kg</strong> jeruk = <span class="write-blank" style="min-width:11mm;"></span> <strong>hg</strong> &nbsp; <em>(3 × 10)</em></li>
+            <li><strong>2.</strong> <strong>500 g</strong> tepung = <span class="write-blank" style="min-width:11mm;"></span> <strong>ons</strong> &nbsp; <em>(500 ÷ 100)</em></li>
+            <li><strong>3.</strong> Paket terberat: Paket A (2 kg), Paket B (15 hg), Paket C (1.800 g) → <strong>Paket</strong> <span class="write-blank" style="min-width:12mm;"></span></li>
+            <li><strong>4.</strong> Urutkan ringan → berat (<em>4 dag, 1 hg, 20 g</em>):<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="write-blank"></span>, <span class="write-blank"></span>, <span class="write-blank"></span>
+            </li>
+            <li><strong>5.</strong> Kantong permen <strong>7 dag</strong> = <span class="write-blank" style="min-width:11mm;"></span> <strong>g</strong> &nbsp; <em>(7 × 10)</em></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pojok Refleksi Bintang Tim -->
+    <div class="reflection-strip">
+      <div>
+        <span>⭐ <strong>Pojok Refleksi Tim</strong> (Beri tanda ✓ pada bintang tim kalian):</span> &nbsp;
+        <span>☆ Sangat Paham &amp; Kompak</span> &nbsp;|&nbsp;
+        <span>☆ Sudah Paham</span> &nbsp;|&nbsp;
+        <span>☆ Perlu Berlatih</span>
+      </div>
+      <div>Paraf Tim: <span class="write-blank" style="min-width:18mm;"></span></div>
+    </div>
+
+    <!-- Footer Halaman 2/4 -->
+    <footer class="sheet-footer">
+      <span>SD Negeri 1 Nagrikidul • Buku Log Petualangan Lift Angka Nol: Si Kucing Hitam</span>
+      <span class="page-num-pill">Halaman 2/4</span>
+    </footer>
+  </section>
+
+  <!-- ========================================================================
+       LEMBAR 3 (HALAMAN 3/4) — ASESMEN INDIVIDU: PEMAHAMAN KONSEP
+       ======================================================================== -->
+  <section class="sheet-a4" id="sheet-3">
+    <!-- Mini-Header Konsisten -->
+    <header class="mini-header">
+      <div class="mini-header-top">
+        <div class="mini-header-brand">
+          <div class="mini-cat-box" data-svg="cat"></div>
+          <div class="mini-header-titles">
+            <h2>BUKU LOG PETUALANGAN ASISTEN PENIMBANG CILIK</h2>
+            <p>Pendamping Belajar Petualangan Lift Angka Nol: Si Kucing Hitam</p>
+          </div>
+        </div>
+        <div class="sheet-type-badge asesmen">📝 ASESMEN INDIVIDU</div>
+      </div>
+      <div class="mini-header-meta">
+        <span>🏫 SD Negeri 1 Nagrikidul • Matematika Kelas III (Fase B)</span>
+        <span>⚖️ Materi: Satuan Berat Baku (2 × 35 Menit) • Dikerjakan Mandiri</span>
+      </div>
+    </header>
+
+    <!-- Kotak Identitas Siswa Individu -->
+    <div class="identity-box">
+      <div class="identity-grid">
+        <div class="id-field"><span>Nama Lengkap:</span><span class="id-line"></span></div>
+        <div class="id-field"><span>No. Absen:</span><span class="id-line" style="max-width:14mm;"></span><span style="margin-left:3mm;">Kelas: III -</span><span class="id-line" style="max-width:14mm;"></span></div>
+        <div class="id-field"><span>Fokus Asesmen:</span><span><strong>Pemahaman Konsep Satuan Berat</strong></span></div>
+        <div class="id-field" style="justify-content:flex-end;">
+          <span style="background:var(--sky-blue-light); border:1.5px solid var(--sky-blue); padding:0.7mm 3mm; border-radius:6px;">
+            Nilai Bagian 1: &nbsp;<strong>______ / 100</strong>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bagian A. Pilihan Ganda Pemahaman Konsep (5 Soal) -->
+    <div>
+      <div class="section-title-bar">
+        <span>🅰️ BAGIAN A. PILIHAN GANDA PEMAHAMAN KONSEP (5 SOAL)</span>
+        <span class="sync-badge">Skor Maksimal: 30</span>
+      </div>
+      <p class="instruction-text">
+        Berilah tanda silang (<strong>X</strong>) pada huruf <strong>A</strong>, <strong>B</strong>, atau <strong>C</strong> di depan jawaban yang paling tepat!
+      </p>
+      <div class="mc-list">
+        <div class="mc-item">
+          <div><strong>1.</strong> Pada jembatan keledai <em>“Kucing Hitam Dalam Got”</em>, kata <strong>“Dalam”</strong> melambangkan satuan berat ....</div>
+          <div class="mc-options">
+            <span>A. kilogram (kg)</span>
+            <span>B. hektogram (hg)</span>
+            <span>C. dekagram (dag)</span>
+          </div>
+        </div>
+
+        <div class="mc-item">
+          <div><strong>2.</strong> Ibu guru menunjukkan sebuah <strong>klip kertas logam</strong> yang sangat ringan. Satuan berat baku yang paling sesuai untuk mengukur berat klip kertas adalah ....</div>
+          <div class="mc-options">
+            <span>A. gram (g)</span>
+            <span>B. kilogram (kg)</span>
+            <span>C. hektogram (hg)</span>
+          </div>
+        </div>
+
+        <div class="mc-item">
+          <div><strong>3.</strong> Di pasar tradisional, ibu membeli cabai seberat <strong>1 ons</strong>. Berat 1 ons sama nilainya dengan ....</div>
+          <div class="mc-options">
+            <span>A. 10 gram</span>
+            <span>B. 1 hektogram (100 g)</span>
+            <span>C. 1 kilogram (1.000 g)</span>
+          </div>
+        </div>
+
+        <div class="mc-item">
+          <div><strong>4.</strong> Pada Menara Gudang Timbangan, jika Lift Angka Nol <strong>turun 2 tingkat</strong> dari lantai <strong>kg</strong> menuju lantai <strong>dag</strong>, maka operasi matematika yang digunakan adalah ....</div>
+          <div class="mc-options">
+            <span>A. dikali 100 (× 100)</span>
+            <span>B. dikali 10 (× 10)</span>
+            <span>C. dibagi 100 (÷ 100)</span>
+          </div>
+        </div>
+
+        <div class="mc-item">
+          <div><strong>5.</strong> Apa fungsi sebenarnya dari <strong>Koin Angka 0</strong> dalam petualangan Si Kucing Hitam?</div>
+          <div class="mc-options">
+            <span>A. Aturan wajib menempelkan angka 0 pada semua jenis bilangan</span>
+            <span>B. Alat bantu visual untuk menunjukkan perkalian atau pembagian 10</span>
+            <span>C. Pengganti alat timbangan digital di warung</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bagian B. Menjodohkan Benda Konkret dengan Satuan Berat (4 Pasangan) -->
+    <div>
+      <div class="section-title-bar gold">
+        <span>🅱️ BAGIAN B. MENJODOHKAN BENDA KONKRET DENGAN SATUAN BERAT (4 PASANGAN)</span>
+        <span class="sync-badge">Skor Maksimal: 28</span>
+      </div>
+      <p class="instruction-text">
+        Tariklah garis lurus menggunakan penggaris untuk menghubungkan gambar benda di sebelah kiri dengan satuan berat yang paling tepat di sebelah kanan!
+      </p>
+      <div class="matching-arena">
+        <div class="match-col">
+          <div class="match-card-left">
+            <div style="display:flex; align-items:center; gap:2mm;">
+              <div data-svg="beras-sm"></div>
+              <span>1. Kantong Beras (1 kantong besar)</span>
+            </div>
+            <span class="match-dot"></span>
+          </div>
+          <div class="match-card-left">
+            <div style="display:flex; align-items:center; gap:2mm;">
+              <div data-svg="apel-sm"></div>
+              <span>2. Buah Apel (1 buah sedang)</span>
+            </div>
+            <span class="match-dot"></span>
+          </div>
+          <div class="match-card-left">
+            <div style="display:flex; align-items:center; gap:2mm;">
+              <div data-svg="permen-sm"></div>
+              <span>3. Tiga Butir Permen</span>
+            </div>
+            <span class="match-dot"></span>
+          </div>
+          <div class="match-card-left">
+            <div style="display:flex; align-items:center; gap:2mm;">
+              <div data-svg="klip-sm"></div>
+              <span>4. Klip Kertas Logam</span>
+            </div>
+            <span class="match-dot"></span>
+          </div>
+        </div>
+
+        <!-- Ruang Tengah Tarik Garis -->
+        <div></div>
+
+        <div class="match-col">
+          <div class="match-card-right">
+            <span class="match-dot"></span>
+            <span>dag (Dekagram)</span>
+          </div>
+          <div class="match-card-right">
+            <span class="match-dot"></span>
+            <span>g (Gram)</span>
+          </div>
+          <div class="match-card-right">
+            <span class="match-dot"></span>
+            <span>kg (Kilogram)</span>
+          </div>
+          <div class="match-card-right">
+            <span class="match-dot"></span>
+            <span>hg / ons (Hektogram)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bagian C. Isian Singkat Konsep Tangga & Kesetaraan (6 Soal) -->
+    <div>
+      <div class="section-title-bar green">
+        <span>©️ BAGIAN C. ISIAN SINGKAT KONSEP TANGGA &amp; KESETARAAN (6 SOAL)</span>
+        <span class="sync-badge">Skor Maksimal: 42</span>
+      </div>
+      <p class="instruction-text">
+        Isilah titik-titik di bawah ini dengan jawaban yang singkat dan tepat!
+      </p>
+      <div class="short-ans-grid">
+        <div>
+          <strong>1.</strong> Urutan satuan berat dari yang paling ringan ke paling berat adalah:<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="write-blank" style="min-width:10mm;"></span> , <span class="write-blank" style="min-width:10mm;"></span> , <span class="write-blank" style="min-width:11mm;"></span> , <span class="write-blank" style="min-width:10mm;"></span>
+        </div>
+        <div>
+          <strong>4.</strong> Lengkapi rantai kesetaraan berikut:<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;1 kg = 10 hg = <span class="write-blank" style="min-width:11mm;"></span> dag = <span class="write-blank" style="min-width:13mm;"></span> g
+        </div>
+        <div>
+          <strong>2.</strong> Setiap <strong>naik 1 tingkat</strong> pada tangga satuan berat, bilangan harus dibagi dengan angka <span class="write-blank" style="min-width:12mm;"></span>.
+        </div>
+        <div>
+          <strong>5.</strong> Lengkapi kesetaraan satuan pasar:<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;1 hg = <span class="write-blank" style="min-width:10mm;"></span> ons = <span class="write-blank" style="min-width:12mm;"></span> g
+        </div>
+        <div>
+          <strong>3.</strong> Jika lift naik <strong>3 tingkat</strong> dari <strong>g</strong> menuju <strong>kg</strong>, operasi hitungnya adalah <strong>÷</strong> <span class="write-blank" style="min-width:14mm;"></span>.
+        </div>
+        <div>
+          <strong>6.</strong> Berat sebuah <strong>penghapus karet</strong> sekolah cocok diukur menggunakan satuan <span class="write-blank" style="min-width:12mm;"></span>.
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Halaman 3/4 -->
+    <footer class="sheet-footer">
+      <span>SD Negeri 1 Nagrikidul • Buku Log Petualangan Lift Angka Nol: Si Kucing Hitam</span>
+      <span class="page-num-pill">Halaman 3/4</span>
+    </footer>
+  </section>
+
+  <!-- ========================================================================
+       LEMBAR 4 (HALAMAN 4/4) — ASESMEN INDIVIDU: PENERAPAN & PEMECAHAN MASALAH
+       ======================================================================== -->
+  <section class="sheet-a4" id="sheet-4">
+    <!-- Mini-Header Konsisten -->
+    <header class="mini-header">
+      <div class="mini-header-top">
+        <div class="mini-header-brand">
+          <div class="mini-cat-box" data-svg="cat"></div>
+          <div class="mini-header-titles">
+            <h2>BUKU LOG PETUALANGAN ASISTEN PENIMBANG CILIK</h2>
+            <p>Pendamping Belajar Petualangan Lift Angka Nol: Si Kucing Hitam</p>
+          </div>
+        </div>
+        <div class="sheet-type-badge asesmen">📝 ASESMEN INDIVIDU</div>
+      </div>
+      <div class="mini-header-meta">
+        <span>🏫 SD Negeri 1 Nagrikidul • Matematika Kelas III (Fase B)</span>
+        <span>⚖️ Materi: Satuan Berat Baku (2 × 35 Menit) • Dikerjakan Mandiri</span>
+      </div>
+    </header>
+
+    <!-- Kotak Identitas Siswa Individu -->
+    <div class="identity-box">
+      <div class="identity-grid">
+        <div class="id-field"><span>Nama Lengkap:</span><span class="id-line"></span></div>
+        <div class="id-field"><span>No. Absen:</span><span class="id-line" style="max-width:14mm;"></span><span style="margin-left:3mm;">Kelas: III -</span><span class="id-line" style="max-width:14mm;"></span></div>
+        <div class="id-field"><span>Fokus Asesmen:</span><span><strong>Penerapan &amp; Pemecahan Masalah</strong></span></div>
+        <div class="id-field" style="justify-content:flex-end;">
+          <span style="background:var(--coin-gold-light); border:1.5px solid var(--coin-gold-dark); padding:0.7mm 3mm; border-radius:6px;">
+            Nilai Bagian 2: &nbsp;<strong>______ / 100</strong>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bagian A. Tabel Konversi Satuan Berat dengan Langkah Hitung (5 Soal) -->
+    <div>
+      <div class="section-title-bar">
+        <span>🅰️ BAGIAN A. KONVERSI SATUAN BERAT DENGAN LANGKAH HITUNG (5 SOAL)</span>
+        <span class="sync-badge">Skor Maksimal: 40</span>
+      </div>
+      <p class="instruction-text">
+        Lengkapilah tabel konversi di bawah ini dengan menuliskan jumlah tingkat tangga dan operasi hitung (<strong>×10</strong> atau <strong>÷10</strong>)!
+      </p>
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th style="width: 7%;">No.</th>
+            <th style="width: 22%;">Soal Konversi</th>
+            <th style="width: 25%;">Arah &amp; Jumlah Tangga</th>
+            <th style="width: 26%;">Operasi Hitung</th>
+            <th style="width: 20%;">Hasil Akhir</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align:center; font-weight:900;">1</td>
+            <td><strong>4 kg = ... hg</strong></td>
+            <td>Turun <span class="write-blank" style="min-width:7mm;"></span> tingkat</td>
+            <td>4 × <span class="write-blank" style="min-width:10mm;"></span> = <span class="write-blank" style="min-width:10mm;"></span></td>
+            <td><span class="write-blank" style="min-width:11mm;"></span> <strong>hg</strong></td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:900;">2</td>
+            <td><strong>8 ons = ... g</strong></td>
+            <td>Turun <span class="write-blank" style="min-width:7mm;"></span> tingkat</td>
+            <td>8 × <span class="write-blank" style="min-width:11mm;"></span> = <span class="write-blank" style="min-width:11mm;"></span></td>
+            <td><span class="write-blank" style="min-width:12mm;"></span> <strong>g</strong></td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:900;">3</td>
+            <td><strong>9 dag = ... g</strong></td>
+            <td>Turun <span class="write-blank" style="min-width:7mm;"></span> tingkat</td>
+            <td>9 × <span class="write-blank" style="min-width:10mm;"></span> = <span class="write-blank" style="min-width:10mm;"></span></td>
+            <td><span class="write-blank" style="min-width:11mm;"></span> <strong>g</strong></td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:900;">4</td>
+            <td><strong>600 dag = ... kg</strong></td>
+            <td>Naik <span class="write-blank" style="min-width:7mm;"></span> tingkat</td>
+            <td>600 ÷ <span class="write-blank" style="min-width:11mm;"></span> = <span class="write-blank" style="min-width:9mm;"></span></td>
+            <td><span class="write-blank" style="min-width:10mm;"></span> <strong>kg</strong></td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:900;">5</td>
+            <td><strong>7.000 g = ... kg</strong></td>
+            <td>Naik <span class="write-blank" style="min-width:7mm;"></span> tingkat</td>
+            <td>7.000 ÷ <span class="write-blank" style="min-width:13mm;"></span> = <span class="write-blank" style="min-width:9mm;"></span></td>
+            <td><span class="write-blank" style="min-width:10mm;"></span> <strong>kg</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bagian B. Membandingkan dan Mengurutkan Berat Benda (2 Soal) -->
+    <div>
+      <div class="section-title-bar gold">
+        <span>🅱️ BAGIAN B. MEMBANDINGKAN &amp; MENGURUTKAN BERAT BENDA (2 SOAL)</span>
+        <span class="sync-badge">Skor Maksimal: 24</span>
+      </div>
+      <div class="compare-order-grid" style="margin-top: 1.5mm;">
+        <!-- Soal 1: Membandingkan -->
+        <div class="problem-box">
+          <div style="font-weight: 900; color: var(--sky-blue-dark); margin-bottom: 1.2mm;">
+            1. Isilah tanda (<code>&gt;</code>, <code>&lt;</code>, atau <code>=</code>) dan alasannya!
+          </div>
+          <div style="margin-bottom: 2mm;">
+            <strong>a)</strong> <strong>3 kg</strong> <span class="write-box-inline" style="min-width:8mm;"></span> <strong>30 hg</strong><br/>
+            <span style="font-size: 7.9pt; color: var(--text-slate);">Alasan: 3 kg = <span class="write-blank" style="min-width:9mm;"></span> hg, sehingga keduanya <span class="write-blank" style="min-width:15mm;"></span>.</span>
+          </div>
+          <div>
+            <strong>b)</strong> <strong>5 ons</strong> <span class="write-box-inline" style="min-width:8mm;"></span> <strong>600 g</strong><br/>
+            <span style="font-size: 7.9pt; color: var(--text-slate);">Alasan: 5 ons = <span class="write-blank" style="min-width:10mm;"></span> g, lebih <span class="write-blank" style="min-width:14mm;"></span> dari 600 g.</span>
+          </div>
+        </div>
+
+        <!-- Soal 2: Mengurutkan -->
+        <div class="problem-box">
+          <div style="font-weight: 900; color: var(--sky-blue-dark); margin-bottom: 1mm;">
+            2. Urutkan berat bahan kue di bawah ini!
+          </div>
+          <div style="font-size: 8.1pt; margin-bottom: 1.2mm;">
+            Bahan kue: <strong>Mentega 250 g</strong>, <strong>Gula halus 3 ons</strong>, dan <strong>Tepung 2 dag</strong>.
+          </div>
+          <div style="font-size: 8pt; background: #F8FAFC; padding: 1mm 1.5mm; border-radius: 5px; margin-bottom: 1.2mm;">
+            • Mentega = <span class="write-blank" style="min-width:9mm;"></span> g &nbsp;|&nbsp; Gula = <span class="write-blank" style="min-width:9mm;"></span> g &nbsp;|&nbsp; Tepung = <span class="write-blank" style="min-width:8mm;"></span> g
+          </div>
+          <div style="font-size: 8.1pt;">
+            Urutan <strong>paling ringan → paling berat</strong>:<br/>
+            <span class="write-blank" style="min-width:21mm;"></span>, <span class="write-blank" style="min-width:21mm;"></span>, <span class="write-blank" style="min-width:21mm;"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bagian C. Pemecahan Masalah Kontekstual / Soal Cerita (2 Soal) -->
+    <div>
+      <div class="section-title-bar green">
+        <span>©️ BAGIAN C. PEMECAHAN MASALAH KONTEKSTUAL / SOAL CERITA (2 SOAL)</span>
+        <span class="sync-badge">Skor Maksimal: 36</span>
+      </div>
+      <div style="margin-top: 1.5mm;">
+        <!-- Soal Cerita 1 -->
+        <div class="story-problem-card">
+          <div>
+            <strong>1.</strong> Ayah membeli <strong>2 kg</strong> apel dan <strong>5 ons</strong> anggur di toko buah. Berapa <strong>gram</strong> berat seluruh buah yang dibeli Ayah?
+          </div>
+          <div class="story-step-line">
+            <span class="step-lbl">Diketahui:</span>
+            <span>Apel = 2 kg = <span class="write-blank" style="min-width:13mm;"></span> g &nbsp;&nbsp;|&nbsp;&nbsp; Anggur = 5 ons = <span class="write-blank" style="min-width:12mm;"></span> g</span>
+          </div>
+          <div class="story-step-line">
+            <span class="step-lbl">Penyelesaian:</span>
+            <span class="step-write"></span>
+          </div>
+          <div class="story-step-line">
+            <span class="step-lbl">Jadi:</span>
+            <span>Berat seluruh buah yang dibeli Ayah adalah <span class="write-blank" style="min-width:18mm;"></span> <strong>gram</strong>.</span>
+          </div>
+        </div>
+
+        <!-- Soal Cerita 2 -->
+        <div class="story-problem-card" style="margin-bottom: 0;">
+          <div>
+            <strong>2.</strong> Si Kucing Hitam mengemas <strong>3.000 g</strong> kacang tanah ke dalam kantong kecil yang masing-masing beratnya <strong>5 hg</strong>. Berapa kantong kecil yang dibutuhkan Si Kucing Hitam?
+          </div>
+          <div class="story-step-line">
+            <span class="step-lbl">Diketahui:</span>
+            <span>Total kacang = 3.000 g = <span class="write-blank" style="min-width:11mm;"></span> hg &nbsp;&nbsp;|&nbsp;&nbsp; Berat 1 kantong = <strong>5 hg</strong></span>
+          </div>
+          <div class="story-step-line">
+            <span class="step-lbl">Penyelesaian:</span>
+            <span class="step-write"></span>
+          </div>
+          <div class="story-step-line">
+            <span class="step-lbl">Jadi:</span>
+            <span>Banyak kantong kecil yang dibutuhkan adalah <span class="write-blank" style="min-width:14mm;"></span> <strong>kantong</strong>.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pesan Penutup Semangat dari Si Kucing Hitam -->
+    <div class="closing-cat-banner">
+      <div style="width: 9mm; height: 9mm; flex-shrink: 0;" data-svg="cat"></div>
+      <div>
+        <strong>🐾 Pesan Si Kucing Hitam:</strong> “Hebat sekali! Kamu sudah menyelesaikan seluruh petualangan menimbang hari ini. Periksa kembali langkah hitunganmu sebelum lembar ini dikumpulkan kepada Ibu/Bapak Guru!”
+      </div>
+    </div>
+
+    <!-- Footer Halaman 4/4 -->
+    <footer class="sheet-footer">
+      <span>SD Negeri 1 Nagrikidul • Buku Log Petualangan Lift Angka Nol: Si Kucing Hitam</span>
+      <span class="page-num-pill">Halaman 4/4</span>
+    </footer>
+  </section>
+
+  <!-- ========================================================================
+       LEMBAR PEGANGAN GURU TERPISAH (TIDAK DIHITUNG SEBAGAI HALAMAN SISWA)
+       ======================================================================== -->
+  <section id="teacher-key-section" aria-label="Kunci Jawaban Guru">
+    <div class="key-header">
+      <div>
+        <h2 style="font-size: 12pt; font-weight: 900; color: #FDE68A;">
+          🔑 KUNCI JAWABAN &amp; PEDOMAN PENSKORAN GURU
+        </h2>
+        <p style="font-size: 8.3pt; color: #E2E8F0;">
+          Buku Log Petualangan Asisten Penimbang Cilik • SD Negeri 1 Nagrikidul (Kelas III Fase B)
+        </p>
+      </div>
+      <div style="background: var(--coral-red); color: #FFFFFF; font-size: 7.8pt; font-weight: 900; padding: 1.5mm 3mm; border-radius: 999px;">
+        LEMBAR PEGANGAN GURU (Tidak Dihitung Halaman Siswa)
+      </div>
+    </div>
+
+    <!-- Kunci Lembar 1 -->
+    <div class="key-block">
+      <h3>📄 Kunci Jawaban Lembar 1 (Halaman 1/4 — LKPD Berpasangan)</h3>
+      <p><strong>Aktivitas 1 (Tabel Satuan &amp; Kesetaraan):</strong></p>
+      <ul style="padding-left: 4.5mm; margin-bottom: 1.5mm;">
+        <li><strong>Lantai 4 — kg (Kilogram):</strong> Contoh: kantong beras, semangka, bungkus gula pasir | Kesetaraan: <code>1 kg = 10 hg = 1.000 g</code></li>
+        <li><strong>Lantai 3 — hg/ons (Hektogram/ons):</strong> Contoh: buah apel, cabai rawit, potongan mentega kecil | Kesetaraan: <code>1 hg = 1 ons = 100 g</code></li>
+        <li><strong>Lantai 2 — dag (Dekagram):</strong> Contoh: penghapus karet, 3 butir permen, 1 sendok makan gula | Kesetaraan: <code>1 dag = 10 g</code></li>
+        <li><strong>Lantai 1 — g (Gram):</strong> Contoh: klip kertas, peniti kecil, daun salam kering | Kesetaraan: <code>1.000 g = 10 hg = 1 kg</code></li>
+      </ul>
+      <p><strong>Aktivitas 2 (Menara Tangga &amp; Jembatan Keledai):</strong></p>
+      <ul style="padding-left: 4.5mm;">
+        <li><strong>Simbol Lantai Menara:</strong> Lantai 4 = <code>kg</code> | Lantai 3 = <code>hg / ons</code> | Lantai 2 = <code>dag</code> | Lantai 1 = <code>g</code></li>
+        <li><strong>Jembatan Keledai:</strong> Kucing = <code>kg</code>, Hitam = <code>hg/ons</code>, Dalam = <code>dag</code>, Got = <code>g</code></li>
+        <li><strong>Aturan Tangga:</strong> Turun 1 = <code>×10</code>, Turun 2 = <code>×100</code>, Turun 3 = <code>×1.000</code> | Naik 1 = <code>÷10</code>, Naik 2 = <code>÷100</code>, Naik 3 = <code>÷1.000</code></li>
+        <li><strong>Urutan:</strong> Terbesar → Terkecil: <code>kg → hg (ons) → dag → g</code> | Terkecil → Terbesar: <code>g → dag → hg (ons) → kg</code></li>
+      </ul>
+    </div>
+
+    <!-- Kunci Lembar 2 -->
+    <div class="key-block">
+      <h3>📄 Kunci Jawaban Lembar 2 (Halaman 2/4 — LKPD Berpasangan)</h3>
+      <p><strong>Aktivitas 3 (Catatan Mesin Lift Angka Nol):</strong></p>
+      <ul style="padding-left: 4.5mm; margin-bottom: 1.5mm;">
+        <li><strong>Tabel Pengamatan A:</strong> (1) <code>1 × 10 = 10</code> | <code>1 koin</code> | <code>10 hg</code>; (2) <code>10 × 10 = 100</code> | <code>2 koin</code> | <code>100 dag</code>; (3) <code>100 × 10 = 1.000</code> | <code>3 koin</code> | <code>1.000 g</code>; (4) <code>1.000 ÷ 10 = 100</code> | <code>2 koin</code> | <code>100 dag</code>; (5) <code>100 ÷ 100 = 1</code> | <code>0 koin</code> | <code>1 kg</code>.</li>
+        <li><strong>Contoh Terpandu B:</strong> (1) <code>2 kg = 20 hg</code> (<code>2 × 10 = 20</code>, <code>1 koin</code>); (2) <code>5 hg = 50 dag</code> (<code>5 × 10 = 50</code>, <code>1 koin</code>); (3) <code>3 dag = 30 g</code> (<code>3 × 10 = 30</code>, <code>1 koin</code>).</li>
+      </ul>
+      <p><strong>Aktivitas 4 (Latihan Web Halaman 5 &amp; Tantangan Web Halaman 6):</strong></p>
+      <ul style="padding-left: 4.5mm;">
+        <li><strong>Bagian A (Latihan):</strong> (1) <code>kg, hg, dag, g</code>; (2) <code>g, dag, ons, kg</code>; (3) <code>4 kg &gt; 400 g</code>; (4) <code>1 hg = 1 ons = 100 g</code>; (5) <code>600 g</code>.</li>
+        <li><strong>Bagian B (Tantangan):</strong> (1) <code>30 hg</code>; (2) <code>5 ons</code>; (3) <code>Paket A</code> (2.000 g); (4) <code>20 g, 4 dag, 1 hg</code>; (5) <code>70 g</code>.</li>
+      </ul>
+    </div>
+
+    <!-- Kunci Lembar 3 -->
+    <div class="key-block">
+      <h3>📄 Kunci Jawaban &amp; Rubrik Lembar 3 (Halaman 3/4 — Asesmen Pemahaman Konsep)</h3>
+      <ul style="padding-left: 4.5mm;">
+        <li><strong>Bagian A — Pilihan Ganda (5 × 6 poin = 30 poin):</strong> <strong>1. C</strong> (dekagram/dag) &nbsp;|&nbsp; <strong>2. A</strong> (gram/g) &nbsp;|&nbsp; <strong>3. B</strong> (1 hektogram / 100 g) &nbsp;|&nbsp; <strong>4. A</strong> (dikali 100 / ×100) &nbsp;|&nbsp; <strong>5. B</strong> (Alat bantu visual perkalian/pembagian 10).</li>
+        <li><strong>Bagian B — Menjodohkan (4 × 7 poin = 28 poin):</strong> 1. Kantong Beras → <strong>kg (Kilogram)</strong>; 2. Buah Apel → <strong>hg / ons (Hektogram)</strong>; 3. Tiga Butir Permen → <strong>dag (Dekagram)</strong>; 4. Klip Kertas Logam → <strong>g (Gram)</strong>.</li>
+        <li><strong>Bagian C — Isian Singkat (6 × 7 poin = 42 poin):</strong> (1) <code>g, dag, hg (ons), kg</code>; (2) <code>10</code>; (3) <code>1.000</code>; (4) <code>100 dag = 1.000 g</code>; (5) <code>1 ons = 100 g</code>; (6) <code>dag</code> (dekagram).</li>
+        <li><strong>Total Nilai Bagian 1:</strong> Skor A (30) + Skor B (28) + Skor C (42) = <strong>100</strong>.</li>
+      </ul>
+    </div>
+
+    <!-- Kunci Lembar 4 -->
+    <div class="key-block" style="margin-bottom: 0;">
+      <h3>📄 Kunci Jawaban &amp; Rubrik Lembar 4 (Halaman 4/4 — Asesmen Penerapan &amp; Masalah)</h3>
+      <ul style="padding-left: 4.5mm;">
+        <li><strong>Bagian A — Tabel Konversi (5 × 8 poin = 40 poin):</strong> (1) Turun 1 tingkat | <code>4 × 10 = 40</code> | <code>40 hg</code>; (2) Turun 2 tingkat | <code>8 × 100 = 800</code> | <code>800 g</code>; (3) Turun 1 tingkat | <code>9 × 10 = 90</code> | <code>90 g</code>; (4) Naik 2 tingkat | <code>600 ÷ 100 = 6</code> | <code>6 kg</code>; (5) Naik 3 tingkat | <code>7.000 ÷ 1.000 = 7</code> | <code>7 kg</code>.</li>
+        <li><strong>Bagian B — Membandingkan &amp; Mengurutkan (24 poin):</strong>
+          <br/>• <strong>No. 1 (12 poin):</strong> a) <code>3 kg = 30 hg</code> (Alasan: <code>3 kg = 30 hg</code>, sama berat); b) <code>5 ons &lt; 600 g</code> (Alasan: <code>5 ons = 500 g</code>, lebih ringan dari 600 g).
+          <br/>• <strong>No. 2 (12 poin):</strong> Mentega = <code>250 g</code>, Gula = <code>300 g</code>, Tepung = <code>20 g</code>. Urutan paling ringan → paling berat: <strong>Tepung (2 dag), Mentega (250 g), Gula halus (3 ons)</strong>.
+        </li>
+        <li><strong>Bagian C — Pemecahan Masalah / Soal Cerita (2 × 18 poin = 36 poin):</strong>
+          <br/>• <strong>Soal 1:</strong> Diketahui: Apel = <code>2.000 g</code>, Anggur = <code>500 g</code>. Penyelesaian: <code>2.000 g + 500 g = 2.500 g</code>. Jadi: <strong>2.500 gram</strong>.
+          <br/>• <strong>Soal 2:</strong> Diketahui: Total kacang = <code>30 hg</code> (atau 3.000 g), 1 kantong = <code>5 hg</code> (atau 500 g). Penyelesaian: <code>30 hg ÷ 5 hg = 6</code>. Jadi: <strong>6 kantong</strong>.
+        </li>
+        <li><strong>Total Nilai Bagian 2:</strong> Skor A (40) + Skor B (24) + Skor C (36) = <strong>100</strong>. &nbsp;|&nbsp; <strong>Nilai Akhir Siswa:</strong> <code>(Nilai Bagian 1 + Nilai Bagian 2) ÷ 2</code>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       JAVASCRIPT: INJEKSI ILUSTRASI SVG INLINE & KONTROL CETAK A4
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ----------------------------------------------------------------------
+         1. KOLEKSI ILUSTRASI SVG INLINE TAJAM UNTUK CETAK
+         ---------------------------------------------------------------------- */
+      const SVG_ASSETS = {
+        // Maskot Si Kucing Hitam (Topi Masinis Biru-Emas + Lonceng Emas)
+        cat: `
+          <svg viewBox="0 0 100 100" style="width:100%; height:100%; overflow:visible;" aria-label="Si Kucing Hitam">
+            <ellipse cx="50" cy="84" rx="22" ry="13" fill="#1E293B"/>
+            <polygon points="26,44 30,22 44,36" fill="#1E293B" stroke="#0F172A" stroke-width="2"/>
+            <polygon points="74,44 70,22 56,36" fill="#1E293B" stroke="#0F172A" stroke-width="2"/>
+            <polygon points="30,41 32,27 41,36" fill="#F472B6"/>
+            <polygon points="70,41 68,27 59,36" fill="#F472B6"/>
+            <circle cx="50" cy="54" r="24" fill="#1E293B" stroke="#0F172A" stroke-width="2"/>
+            <!-- Topi Masinis -->
+            <ellipse cx="50" cy="33" rx="20" ry="5" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+            <path d="M35,33 L38,21 Q50,17 62,21 L65,33 Z" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+            <rect x="36" y="29" width="28" height="4" fill="#F59E0B"/>
+            <circle cx="50" cy="25" r="3.5" fill="#F59E0B"/>
+            <!-- Mata & Ekspresi Ramah -->
+            <circle cx="41" cy="52" r="5.5" fill="#FFFFFF"/>
+            <circle cx="59" cy="52" r="5.5" fill="#FFFFFF"/>
+            <circle cx="42" cy="52" r="3" fill="#0F172A"/>
+            <circle cx="60" cy="52" r="3" fill="#0F172A"/>
+            <circle cx="43" cy="50.5" r="1.1" fill="#FFFFFF"/>
+            <circle cx="61" cy="50.5" r="1.1" fill="#FFFFFF"/>
+            <polygon points="47,59 53,59 50,62.5" fill="#F472B6"/>
+            <path d="M43,66 Q50,72 57,66" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/>
+            <!-- Kalung Lonceng Emas -->
+            <path d="M34,74 Q50,80 66,74" fill="none" stroke="#DC2626" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="50" cy="79" r="5.5" fill="#F59E0B" stroke="#78350F" stroke-width="1.5"/>
+            <!-- Tangan Membimbing -->
+            <circle cx="80" cy="62" r="6.5" fill="#1E293B" stroke="#F59E0B" stroke-width="2"/>
+          </svg>
+        `,
+
+        // Koin Angka 0 Emas
+        coin: `
+          <svg viewBox="0 0 64 64" style="width:100%; height:100%;" aria-label="Koin Angka 0">
+            <circle cx="32" cy="32" r="28" fill="#F59E0B" stroke="#78350F" stroke-width="3.5"/>
+            <circle cx="32" cy="32" r="21" fill="#FDE68A" stroke="#B45309" stroke-width="2" stroke-dasharray="4 3"/>
+            <text x="32" y="42" text-anchor="middle" font-size="28" font-weight="900" fill="#0F172A">0</text>
+          </svg>
+        `,
+
+        // 6 Benda Konkret (Ukuran Kartu Lembar 1)
+        beras: `
+          <svg viewBox="0 0 70 50" width="46" height="33" aria-label="Kantong Beras">
+            <rect x="13" y="10" width="44" height="36" rx="7" fill="#FFFFFF" stroke="#0284C7" stroke-width="2.5"/>
+            <path d="M13,18 Q35,8 57,18" fill="#0284C7"/>
+            <text x="35" y="33" text-anchor="middle" font-size="10" font-weight="900" fill="#0F172A">BERAS</text>
+          </svg>
+        `,
+        apel: `
+          <svg viewBox="0 0 60 50" width="38" height="32" aria-label="Buah Apel">
+            <circle cx="30" cy="28" r="16" fill="#DC2626" stroke="#7F1D1D" stroke-width="2"/>
+            <path d="M30,12 Q32,5 37,5" fill="none" stroke="#78350F" stroke-width="2.5" stroke-linecap="round"/>
+            <ellipse cx="36" cy="11" rx="6" ry="3.2" fill="#16A34A"/>
+          </svg>
+        `,
+        cabai: `
+          <svg viewBox="0 0 60 50" width="38" height="32" aria-label="Cabai Rawit">
+            <path d="M14,36 Q28,42 44,17 Q38,14 33,19 Q24,31 14,36 Z" fill="#DC2626" stroke="#7F1D1D" stroke-width="2"/>
+            <path d="M41,15 L48,9" stroke="#16A34A" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        `,
+        permen: `
+          <svg viewBox="0 0 64 50" width="40" height="32" aria-label="Tiga Butir Permen">
+            <circle cx="18" cy="28" r="8" fill="#F59E0B" stroke="#78350F" stroke-width="1.8"/>
+            <circle cx="33" cy="18" r="8" fill="#EC4899" stroke="#831843" stroke-width="1.8"/>
+            <circle cx="44" cy="31" r="8" fill="#16A34A" stroke="#14532D" stroke-width="1.8"/>
+          </svg>
+        `,
+        penghapus: `
+          <svg viewBox="0 0 64 50" width="40" height="32" aria-label="Penghapus Karet">
+            <rect x="10" y="16" width="44" height="20" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="2"/>
+            <rect x="10" y="16" width="20" height="20" rx="3" fill="#38BDF8" stroke="#0F172A" stroke-width="2"/>
+          </svg>
+        `,
+        klip: `
+          <svg viewBox="0 0 70 50" width="44" height="32" aria-label="Klip Kertas">
+            <path d="M18,31 L48,31 A7,7 0 0,0 48,17 L21,17 A4.5,4.5 0 0,0 21,26 L44,26" fill="none" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        `,
+
+        // Benda Konkret Ukuran Mini (Untuk Soal Menjodohkan Lembar 3)
+        'beras-sm': `<svg viewBox="0 0 70 50" width="28" height="20"><rect x="13" y="10" width="44" height="36" rx="7" fill="#FFFFFF" stroke="#0284C7" stroke-width="3"/><path d="M13,18 Q35,8 57,18" fill="#0284C7"/></svg>`,
+        'apel-sm': `<svg viewBox="0 0 60 50" width="26" height="20"><circle cx="30" cy="28" r="16" fill="#DC2626" stroke="#7F1D1D" stroke-width="2.5"/><ellipse cx="36" cy="11" rx="6" ry="3.5" fill="#16A34A"/></svg>`,
+        'permen-sm': `<svg viewBox="0 0 64 50" width="28" height="20"><circle cx="18" cy="28" r="8" fill="#F59E0B"/><circle cx="33" cy="18" r="8" fill="#EC4899"/><circle cx="44" cy="31" r="8" fill="#16A34A"/></svg>`,
+        'klip-sm': `<svg viewBox="0 0 70 50" width="28" height="20"><path d="M18,31 L48,31 A7,7 0 0,0 48,17 L21,17 A4.5,4.5 0 0,0 21,26 L44,26" fill="none" stroke="#475569" stroke-width="4" stroke-linecap="round"/></svg>`,
+
+        // Diagram Menara Gudang Timbangan 4 Lantai + Lift Vertikal (Lembar 1 Aktivitas 2)
+        'tower-worksheet': `
+          <svg viewBox="0 0 330 225" style="width:100%; height:auto; display:block;" aria-label="Diagram Menara Gudang Timbangan 4 Lantai">
+            <!-- Atap -->
+            <polygon points="48,26 165,4 282,26" fill="#F59E0B" stroke="#0F172A" stroke-width="2.5" stroke-linejoin="round"/>
+            <text x="165" y="21" text-anchor="middle" font-size="10" font-weight="900" fill="#0F172A">MENARA GUDANG TIMBANGAN</text>
+
+            <!-- Panah Turun Merah di Sisi Kiri (×10) -->
+            <line x1="24" y1="38" x2="24" y2="205" stroke="#DC2626" stroke-width="3.5"/>
+            <polygon points="24,214 16,200 32,200" fill="#DC2626"/>
+            <rect x="2" y="96" width="44" height="34" rx="6" fill="#FEE2E2" stroke="#DC2626" stroke-width="1.8"/>
+            <text x="24" y="111" text-anchor="middle" font-size="8.5" font-weight="900" fill="#DC2626">TURUN</text>
+            <text x="24" y="123" text-anchor="middle" font-size="10" font-weight="900" fill="#DC2626">× 10</text>
+
+            <!-- Panah Naik Hijau di Sisi Kanan (÷10) -->
+            <line x1="306" y1="212" x2="306" y2="44" stroke="#16A34A" stroke-width="3.5"/>
+            <polygon points="306,34 298,48 314,48" fill="#16A34A"/>
+            <rect x="284" y="96" width="44" height="34" rx="6" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.8"/>
+            <text x="306" y="111" text-anchor="middle" font-size="8.5" font-weight="900" fill="#16A34A">NAIK</text>
+            <text x="306" y="123" text-anchor="middle" font-size="10" font-weight="900" fill="#16A34A">÷ 10</text>
+
+            <!-- Badan Menara -->
+            <rect x="52" y="26" width="226" height="192" rx="8" fill="#F8FAFC" stroke="#0F172A" stroke-width="2.5"/>
+
+            <!-- Lantai 4 -->
+            <rect x="60" y="34" width="144" height="40" rx="6" fill="#E0E7FF" stroke="#4F46E5" stroke-width="2"/>
+            <text x="68" y="51" font-size="9.5" font-weight="900" fill="#0F172A">Lantai 4 (Kucing)</text>
+            <text x="68" y="65" font-size="8.5" font-weight="700" fill="#334155">Simbol:</text>
+            <rect x="112" y="52" width="84" height="17" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+
+            <!-- Lantai 3 -->
+            <rect x="60" y="79" width="144" height="40" rx="6" fill="#E0F2FE" stroke="#0284C7" stroke-width="2"/>
+            <text x="68" y="96" font-size="9.5" font-weight="900" fill="#0F172A">Lantai 3 (Hitam)</text>
+            <text x="68" y="110" font-size="8.5" font-weight="700" fill="#334155">Simbol:</text>
+            <rect x="112" y="97" width="84" height="17" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+
+            <!-- Lantai 2 -->
+            <rect x="60" y="124" width="144" height="40" rx="6" fill="#DCFCE7" stroke="#16A34A" stroke-width="2"/>
+            <text x="68" y="141" font-size="9.5" font-weight="900" fill="#0F172A">Lantai 2 (Dalam)</text>
+            <text x="68" y="155" font-size="8.5" font-weight="700" fill="#334155">Simbol:</text>
+            <rect x="112" y="142" width="84" height="17" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+
+            <!-- Lantai 1 -->
+            <rect x="60" y="169" width="144" height="40" rx="6" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+            <text x="68" y="186" font-size="9.5" font-weight="900" fill="#0F172A">Lantai 1 (Got)</text>
+            <text x="68" y="200" font-size="8.5" font-weight="700" fill="#334155">Simbol:</text>
+            <rect x="112" y="187" width="84" height="17" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+
+            <!-- Poros Lift Vertikal Emas -->
+            <rect x="212" y="34" width="58" height="175" rx="7" fill="#1E293B" stroke="#F59E0B" stroke-width="2.5"/>
+            <line x1="241" y1="34" x2="241" y2="209" stroke="#94A3B8" stroke-width="2" stroke-dasharray="4 4"/>
+            <!-- Kabin Lift -->
+            <rect x="218" y="44" width="46" height="36" rx="6" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2"/>
+            <text x="241" y="61" text-anchor="middle" font-size="9" font-weight="900" fill="#0F172A">LIFT</text>
+            <text x="241" y="73" text-anchor="middle" font-size="9" font-weight="900" fill="#0F172A">ANGKA 0</text>
+          </svg>
+        `
+      };
+
+      /* ----------------------------------------------------------------------
+         2. RENDER SEMUA SLOT SVG INLINE & EVENT LISTENER CETAK
+         ---------------------------------------------------------------------- */
+      function initPrintPackage() {
+        document.querySelectorAll('[data-svg]').forEach((el) => {
+          const key = el.getAttribute('data-svg');
+          if (SVG_ASSETS[key]) {
+            el.innerHTML = SVG_ASSETS[key];
+          }
+        });
+
+        const btnPrintStudents = document.getElementById('btnPrintStudents');
+        const btnToggleTeacherKey = document.getElementById('btnToggleTeacherKey');
+        const teacherSection = document.getElementById('teacher-key-section');
+
+        // Cetak tepat 4 Lembar Siswa (A4 Portrait) tanpa lembar kunci guru
+        btnPrintStudents.addEventListener('click', () => {
+          document.body.classList.add('printing-students-only');
+          window.print();
+          setTimeout(() => {
+            document.body.classList.remove('printing-students-only');
+          }, 500);
+        });
+
+        // Tampilkan / Sembunyikan & Cetak Kunci Jawaban Guru
+        btnToggleTeacherKey.addEventListener('click', () => {
+          const isVisible = document.body.classList.toggle('teacher-key-visible');
+          btnToggleTeacherKey.classList.toggle('active', isVisible);
+          btnToggleTeacherKey.textContent = isVisible
+            ? '✅ Kunci Jawaban Guru Tampil (Klik untuk Sembunyikan)'
+            : '🔑 Tampilkan / Cetak Kunci Jawaban Guru';
+
+          if (isVisible && teacherSection) {
+            teacherSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', initPrintPackage);
+    })();
+  </script>
+</body>
+</html>
